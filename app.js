@@ -7,12 +7,7 @@ require('dotenv').config({path: 'keys.env'})
 const { ApolloServer, gql } = require('apollo-server-express');
 const SESSION_SECRET = "asdklfjqo31";
 
-mongoose.connect('mongodb://chenso:chenso1@ds233323.mlab.com:33323/apollo_dev');
-
-const Cat = mongoose.model('Cat', { name: String });
-
-const kitty = new Cat({ name: 'Zildjian' });
-kitty.save().then(() => console.log('meow'));
+require('./db.js')
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
