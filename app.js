@@ -1,40 +1,40 @@
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 require('dotenv').config({path: 'keys.env'})
 const { ApolloServer, gql } = require('apollo-server-express');
-const SESSION_SECRET = "asdklfjqo31";
 
 require('./db.js')
+
+const Cat = require('./models/resolutions.js')
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
 type Query {
-  cats: String 
+  allCats: String 
+}
+
+type Cat {
+  name: String
 }
 
 type Mutation {
-  createCats(name: String!): String 
+  createCats(name: String): String 
 }
 `;
 
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    cats(obj, args, { userId }) {
-      if(!userId){
-        return 'fake cat'
-      } else {
-        return 'authentic meow'
-      }
+    async allCats() {
+      return 'hello' 
     }
   },
 
   Mutation: {
-    createCats(obj, { name }, { userId }) {
-      return 'meower'  
+    async createCats(obj, { name },__ ) {
+      return 'kitty'
     }
   }
 };
@@ -45,7 +45,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:7777"
+    origin: 'http://localhost:7777' 
   })
 );
 // Returns middleware that only parses json
@@ -59,7 +59,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(
   session({
     name: "qid",
-    secret: SESSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -84,7 +84,7 @@ app.use(
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers
 });
 
 server.applyMiddleware({ app });
